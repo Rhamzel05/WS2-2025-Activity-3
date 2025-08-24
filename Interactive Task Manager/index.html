@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interactive Task Manager</title>
+  <link rel="stylesheet" href="tskmngr.css" />
+  <style>
+    .switch {
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .switch input[type="checkbox"] {
+      width: 0;
+      height: 0;
+      opacity: 0;
+    }
+    .slider {
+      width: 44px;
+      height: 24px;
+      background: var(--card);
+      border: 1px solid var(--ring);
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .slider:before {
+      content: "";
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      width: 18px;
+      height: 18px;
+      background: #fbbf24;
+      border-radius: 50%;
+      transition: transform .2s, background .2s;
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+      background: #6366f1;
+    }
+    .switch-label {
+      font-size: 16px;
+      color: var(--text);
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <label class="switch">
+    <input type="checkbox" id="themeSwitch" />
+    <span class="slider"></span>
+    <span class="switch-label" id="switchLabel">☀️</span>
+  </label>
+  <main class="container">
+    <h1>Interactive Task Manager</h1>
+    <p style="text-align:center; margin-top:-20px;">Mogol - 3F1</p>
+    <section class="controls">
+      <div class="row">
+        <input id="taskInput" type="text" placeholder="New task..." />
+        <select id="prioritySelect" aria-label="Priority">
+          <option value="low">Low Priority</option>
+          <option value="medium">Medium Priority</option>
+          <option value="high">High Priority</option>
+        </select>
+        <button id="addBtn" class="primary">Add Task</button>
+      </div>
+      <div class="row">
+        <input id="searchInput" type="text" placeholder="Search tasks..." />
+        <button id="clearSearchBtn">Clear</button>
+      </div>
+    </section>
+    <section class="board">
+      <div class="column" data-status="todo">
+        <header>
+          <h2>To Do</h2>
+          <span class="count" id="count-todo">0</span>
+        </header>
+        <div class="task-list" id="todo" aria-label="To Do task list"></div>
+      </div>
+      <div class="column" data-status="inprogress">
+        <header>
+          <h2>In Progress</h2>
+          <span class="count" id="count-inprogress">0</span>
+        </header>
+        <div class="task-list" id="inprogress" aria-label="In Progress task list"></div>
+      </div>
+      <div class="column" data-status="done">
+        <header>
+          <h2>Done</h2>
+          <span class="count" id="count-done">0</span>
+        </header>
+        <div class="task-list" id="done" aria-label="Done task list"></div>
+      </div>
+    </section>
+  </main>
+  <template id="taskTemplate">
+    <div class="task" draggable="true">
+      <span class="priority-bar"></span>
+      <div class="task-text" title="Double-click to edit"></div>
+      <button class="task-delete" aria-label="Delete task" title="Delete">×</button>
+    </div>
+  </template>
+  <script src="func.js"></script>
+  <script>
+    const themeSwitch = document.getElementById('themeSwitch');
+    const switchLabel = document.getElementById('switchLabel');
+    function setTheme(mode) {
+      if (mode === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeSwitch.checked = true;
+        switchLabel.textContent = '🌙';
+      } else {
+        document.body.classList.remove('dark-mode');
+        themeSwitch.checked = false;
+        switchLabel.textContent = '☀️';
+      }
+      localStorage.setItem('theme', mode);
+    }
+    themeSwitch.addEventListener('change', () => {
+      setTheme(themeSwitch.checked ? 'dark' : 'light');
+    });
+    (function() {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        setTheme('dark');
+      } else {
+        setTheme('light');
+      }
+    })();
+  </script>
+</body>
+</html>
